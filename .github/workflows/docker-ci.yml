@@ -1,0 +1,28 @@
+name: Docker CI Pipeline
+
+# 1. Триггер: запускать пайплайн при каждом пуше в ветку main
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # 2. Запускаем на чистой виртуальной машине Ubuntu
+
+    steps:
+    # 3. Скачиваем наш код из GitHub в виртуальную машину
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    # 4. Проверяем, собирается ли наш Docker-образ без ошибок
+    - name: Build Docker Image
+      run: |
+        docker build -t topo-site-test:latest .
+
+    # 5. Тестируем: запускаем контейнер из собранного образа
+    - name: Test Docker Container
+      run: |
+        docker run -d --name test_site -p 8085:80 topo-site-test:latest
+        sleep 3
+        curl --fail http://localhost:8085 || exit 1
+
