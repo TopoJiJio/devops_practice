@@ -30,9 +30,15 @@ jobs:
         sleep 3
         curl --fail http://localhost:8085 || exit 1
         docker rm -f test_site
+    # 5.5 Отладка: смотрим, где находится робот и какие файлы он видит
+    - name: Debug paths and files
+      run: |
+        pwd
+        ls -la
 
     # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
     - name: Deploy with Docker Compose
       run: |
-        docker compose -f ${{ github.workspace }}/docker-compose.yml down --remove-orphans
-        docker compose -f ${{ github.workspace }}/docker-compose.yml up -d --force-recreate
+        docker compose down --remove-orphans
+        docker compose up -d --force-recreate
+
