@@ -35,10 +35,10 @@ jobs:
       run: |
         pwd
         ls -la
-
     # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
     - name: Deploy with Docker Compose
       run: |
+        cd ${{ github.workspace }}
         docker compose down --remove-orphans
         docker compose up -d --force-recreate
 
