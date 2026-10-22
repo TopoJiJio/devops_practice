@@ -6,7 +6,7 @@ on:  push:
 
 jobs:
   build-and-test:
-    runs-on: self-hosted # 2. Запускаем на чистой виртуальной машине Ubuntu
+    runs-on: [ self-hosted, Linux, X64 ] # 2. Запускаем на чистой виртуальной машине Ubuntu
 
     steps:
     # 3. Скачиваем наш код из GitHub в виртуальную машину
