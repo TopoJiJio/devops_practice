@@ -1,7 +1,8 @@
 name: Docker CI Pipeline
 
 # 1. Триггер: запускать пайплайн при каждом пуше в ветку main
-on:  push:
+on: 
+  push:
     branches: [ "main" ]
 
 jobs:
