@@ -22,9 +22,14 @@ jobs:
     # 5. Тестируем: запускаем контейнер из собранного образа
     - name: Test Docker Container
       run: |
+    # 5. Тестируем: запускаем контейнер из собранного образа
+    - name: Test Docker Container
+      run: |
+        docker rm -f test_site || true
         docker run -d --name test_site -p 8085:80 topo-site-test:latest
         sleep 3
         curl --fail http://localhost:8085 || exit 1
+        docker rm -f test_site
 
     # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
     - name: Deploy with Docker Compose
