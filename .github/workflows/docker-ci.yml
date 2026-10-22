@@ -29,6 +29,6 @@ jobs:
             # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
     - name: Deploy with Docker Compose
       run: |
-        docker compose -f ${{ github.workspace }}/docker-compose.yml down --remove-orphans
-        docker compose -f ${{ github.workspace }}/docker-compose.yml up -d --force-recreate
+        docker compose -f ${{github.workspace}}/docker-compose.yml down --remove-orphans
+        docker compose -f ${{github.workspace}}/docker-compose.yml up -d --force-recreate
 
