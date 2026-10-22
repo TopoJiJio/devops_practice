@@ -1,34 +1,43 @@
-name: Docker CI Pipeline
+name: Docker CI/CD Pipeline
 
-# 1. Триггер: запускать пайплайн при каждом пуше в ветку main
-on: 
+on:
   push:
     branches: [ "main" ]
 
 jobs:
   build-and-test:
-    runs-on: [ self-hosted, Linux, X64 ] # 2. Запускаем на чистой виртуальной машине Ubuntu
+    # Запускаем сборку и тесты в изолированном облаке GitHub
+    runs-on: ubuntu-latest
 
     steps:
-    # 3. Скачиваем наш код из GitHub в виртуальную машину
     - name: Checkout repository code
       uses: actions/checkout@v4
 
-    # 4. Проверяем, собирается ли наш Docker-образ без ошибок
     - name: Build Docker Image
       run: |
         docker build -t topo-site-test:latest .
 
-    # 5. Тестируем: запускаем контейнер из собранного образа
     - name: Test Docker Container
       run: |
-        docker rm -f test_site || true
         docker run -d --name test_site -p 8085:80 topo-site-test:latest
         sleep 3
         curl --fail http://localhost:8085 || exit 1
-            # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
-    - name: Deploy with Docker Compose
-      run: |
-        docker compose -f ${{github.workspace}}/docker-compose.yml down --remove-orphans
-        docker compose -f ${{github.workspace}}/docker-compose.yml up -d --force-recreate
+
+  deploy:
+    # Этот шаг начнется ТОЛЬКО если тесты выше прошли успешно
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to Home Server via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ~/devops_practice
+          git pull origin main
+          docker compose down --remove-orphans
+          docker compose up -d --force-recreate
 
