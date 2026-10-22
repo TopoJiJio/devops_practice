@@ -1,13 +1,12 @@
 name: Docker CI Pipeline
 
 # 1. Триггер: запускать пайплайн при каждом пуше в ветку main
-on:
-  push:
+on:  push:
     branches: [ "main" ]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest # 2. Запускаем на чистой виртуальной машине Ubuntu
+    runs-on: self-hosted # 2. Запускаем на чистой виртуальной машине Ubuntu
 
     steps:
     # 3. Скачиваем наш код из GitHub в виртуальную машину
@@ -26,3 +25,8 @@ jobs:
         sleep 3
         curl --fail http://localhost:8085 || exit 1
 
+    # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
+    - name: Deploy with Docker Compose
+      run: |
+        docker compose down
+        docker compose up -d
