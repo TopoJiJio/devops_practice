@@ -29,5 +29,5 @@ jobs:
     # 6. Финальный деплой: запускаем проект через Docker Compose на нашем сервере
     - name: Deploy with Docker Compose
       run: |
-        docker compose down
-        docker compose up -d
+        docker compose down --remove-orphans
+        docker compose up -d --force-recreate
